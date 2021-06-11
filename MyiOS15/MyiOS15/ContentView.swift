@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct Colors: Identifiable {
-    var id = UUID()
+    let id = UUID()
     var name: String
 }
 
+// Async Image
+// Searchable List
+// Refreshable List
+// listSeparator
+
+let imageUrl = "https://source.unsplash.com/random"
+
 struct ContentView: View {
-    let imageUrl = "https://source.unsplash.com/random"
     @State private var searchQuery: String = ""
     @State private var colors: [Colors] = [Colors(name: "Blue"),Colors(name: "Red"),Colors(name: "Green"), Colors(name: "Yellow"), Colors(name: "White"), Colors(name: "Purple"), Colors(name: "Orange"), Colors(name: "Pink"), Colors(name: "Brown"), Colors(name: "Black"), Colors(name: "Gray"), Colors(name: "Clear")]
 
@@ -27,19 +33,29 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             
-            List(searchResults) { color in
-                HStack {
-                    AsyncImage(url: URL(string: imageUrl)!, scale: 0.6, content: { image in
-                        image
-                    }, placeholder: {
-                        Image(systemName: "person.circle.fill")
-                            .renderingMode(.original)
-                            .font(.system(size: 60))
-                    })
+            List {
+                ForEach(searchResults) { color in
+                    RowView(color: color)
+                        .listRowSeparator(.visible)
+                        .listRowSeparatorTint(nil)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            
+                            Button(role: .destructive, action: {
+                                withAnimation {
+                                    if let index = colors.firstIndex(where: { $0.id == color.id}) {
+                                        colors.remove(at: index)
+                                    }
+                                }
+                            }) {
+                                Label("Delete", systemImage: "xmark.bin")
+                            }
+                        }
                     
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
-                    Text(color.name)
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            Button(action: { }) {
+                                Label("Pin", systemImage: "pin")
+                            }
+                        }
                 }
             }
             .searchable("Search color", text: $searchQuery, placement: .automatic)
@@ -54,5 +70,25 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+struct RowView: View {
+    let color: Colors
+    var body: some View {
+        HStack {
+            AsyncImage(url: URL(string: imageUrl)!, scale: 0.6, content: { image in
+                image
+            }, placeholder: {
+                Image(systemName: "person.circle.fill")
+                    .renderingMode(.original)
+                    .font(.system(size: 60))
+            })
+            
+                .frame(width: 60, height: 60)
+                .clipShape(Circle())
+            Text(color.name)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
