@@ -42,9 +42,9 @@ struct ContentView: View {
                     Text(color.name)
                 }
             }
-            .searchable("Search color", text: $searchQuery, placement: .automatic){
-                Text("re").searchCompletion("red")
-                Text("b")
+            .searchable("Search color", text: $searchQuery, placement: .automatic)
+            .refreshable {
+                colors.append(Colors(name: colors.randomElement()!.name))
             }
             .navigationTitle("Async Images")
         }
