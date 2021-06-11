@@ -32,7 +32,7 @@ struct ContentView: View {
     }
     var body: some View {
         NavigationView {
-            
+            let _ = Self._printChanges()
             List {
                 ForEach(searchResults) { color in
                     RowView(color: color)
@@ -58,6 +58,7 @@ struct ContentView: View {
                         }
                 }
             }
+            
             .searchable("Search color", text: $searchQuery, placement: .automatic)
             .refreshable {
                 colors.append(Colors(name: colors.randomElement()!.name))
